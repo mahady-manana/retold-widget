@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/r-logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Retold.me Widget - Embedded Public Widget</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      (function () {
+        let resizeTimeout;
+        let lastHeight = 0;
+        let isResizing = false; // Flag to prevent loops
+
+        function sendResizeMessage() {
+          // Use a timeout to ensure all rendering is complete
+          resizeTimeout = setTimeout(function () {
+            // Calculate the actual content height more accurately
+            const body = document.body;
+            const html = document.documentElement;
+
+            // Get the actual content height
+            const contentHeight = Math.max(
+              body.scrollHeight,
+              body.offsetHeight,
+              html.offsetHeight,
+            );
+
+            // Add a small buffer but not too much
+            const height = contentHeight + 10; // Reduced padding
+
+            // Only send message if height has changed significantly (avoid loops)
+            if (Math.abs(height - lastHeight) > 5) {
+              lastHeight = height;
+
+              window.parent.postMessage(
+                {
+                  type: "resized",
+                  widgetId: "${widgetId}",
+                  height: height,
+                },
+                "*",
+              );
+            }
+          }, 100); // Small delay to ensure rendering is complete
+        }
+
+        // Send initial resize message after a small delay
+        setTimeout(sendResizeMessage, 100);
+
+        // Also listen for window resize
+        window.addEventListener("resize", sendResizeMessage);
+
+        // Listen for custom resize events (in case other scripts trigger them)
+        window.addEventListener("load", sendResizeMessage);
+      })();
+    </script>
+  </body>
+</html>

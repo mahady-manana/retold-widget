@@ -1,0 +1,288 @@
+/* Reset and base styles for embedding */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: transparent !important;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* Container for the entire widget */
+.testimonial-container {
+  max-width: 100%;
+  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 16px; /* Base font size for scaling */
+}
+
+/* Container for multiple testimonials */
+.testimonials-container {
+  max-width: 100%;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Flexbox-based responsive grid for testimonials */
+.testimonial-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+/* Individual testimonial card */
+.testimonial-card {
+  flex: 1;
+  min-width: 280px;
+  max-width: 400px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* On larger screens, allow cards to grow */
+@media (min-width: 768px) {
+  .testimonial-card {
+    min-width: 300px;
+  }
+}
+
+/* On even larger screens */
+@media (min-width: 1024px) {
+  .testimonial-card {
+    min-width: 320px;
+  }
+}
+
+/* Header section of testimonial */
+.testimonial-header {
+  margin-bottom: 1rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Author name styling */
+.testimonial-author {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+/* Meta information (title, company) */
+.testimonial-meta {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Content styling with quotes */
+.testimonial-content {
+  font-style: italic;
+  color: #374151;
+  line-height: 1.6;
+  position: relative;
+  margin-bottom: 1rem;
+  flex-grow: 1;
+}
+
+/* Quote marks */
+.testimonial-content:before {
+  content: open-quote;
+  font-size: 2rem;
+  line-height: 1;
+  color: #d1d5db;
+  position: absolute;
+  left: -1rem;
+  top: -0.5rem;
+  font-family: serif;
+}
+
+.testimonial-content:after {
+  content: close-quote;
+  font-size: 2rem;
+  line-height: 1;
+  color: #d1d5db;
+  display: block;
+  text-align: right;
+  margin-top: -1rem;
+  font-family: serif;
+}
+
+/* Footer with date */
+.testimonial-footer {
+  color: #9ca3af;
+  font-size: 0.75rem;
+  text-align: right;
+  margin-top: auto; /* Push to bottom */
+}
+
+/* Rating stars */
+.rating {
+  margin-bottom: 0.75rem;
+  display: flex;
+}
+
+.star {
+  color: #d1d5db;
+  font-size: 1.2rem;
+  margin-right: 0.1rem;
+}
+
+.star.filled {
+  color: #fbbf24;
+}
+
+/* Loading, error, and no testimonials states */
+.loading, .error, .no-testimonials {
+  padding: 1rem;
+  text-align: center;
+  color: #6b7280;
+  width: 100%;
+}
+
+.error {
+  color: #ef4444;
+}
+
+.error-details {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  color: #9ca3af;
+}
+
+/* SKELETON LOADING STYLES */
+.skeleton-content {
+  height: 80px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.skeleton-author {
+  height: 20px;
+  width: 120px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-meta {
+  height: 16px;
+  width: 180px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.skeleton-rating {
+  height: 20px;
+  width: 100px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.skeleton-footer {
+  height: 14px;
+  width: 80px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+  align-self: flex-end;
+}
+
+.skeleton-header {
+  margin-bottom: 1rem;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .testimonial-container {
+    padding: 1rem;
+  }
+  
+  .testimonial-card {
+    min-width: 100%;
+    margin-bottom: 1rem;
+  }
+  
+  .testimonial-grid {
+    flex-direction: column;
+  }
+  
+  .testimonial-content:before,
+  .testimonial-content:after {
+    display: none;
+  }
+  
+  .testimonial-content {
+    position: static;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Ensure proper sizing when embedded in constrained containers */
+iframe,
+div[id*='retoldin'],
+div[class*='testimonial'] {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Adjust for very narrow containers */
+@media (max-width: 400px) {
+  .testimonial-card {
+    min-width: 100%;
+  }
+  
+  .testimonial-container {
+    padding: 0.75rem;
+  }
+  
+  .testimonial-content {
+    font-size: 0.9rem;
+  }
+  
+  .testimonial-author {
+    font-size: 1rem;
+  }
+}
