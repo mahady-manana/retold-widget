@@ -20,16 +20,9 @@
    * STATE
    * ================================ */
 
-  // widgetId -> iframe
-  const iframeRegistry = Object.create(null);
-
   /* ================================
    * UTILITIES
    * ================================ */
-
-  function clampHeight(height) {
-    return Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, height));
-  }
 
   function getPublishableKey() {
     const scripts = document.getElementsByTagName("script");
@@ -76,36 +69,24 @@
     // Preserve user styles/classes
     iframe.className = element.className;
     iframe.style.minWidth = "100%";
-
-    iframeRegistry[widgetId] = iframe;
+    iframe.dataset.widgetId = widgetId;
 
     let lastHeight = 0;
 
     window.addEventListener("message", function (event) {
-      console.log("====================================");
-      console.log(event);
-      console.log("====================================");
       // Security: only accept messages from widget origin
       if (event.origin !== WIDGET_ORIGIN) return;
-      console.log("====================================");
-      console.log("Pass origin");
-      console.log("====================================");
 
       if (event.data.type === "resized" && event.data.height) {
         // Validate height to prevent malicious resizing
-        console.log("Pass check");
+
         const newHeight = Math.max(
           parseInt(MIN_HEIGHT),
           Math.min(parseInt(MAX_HEIGHT), parseInt(event.data.height)),
         );
-
-        console.log("====================================");
-        console.log({ newHeight });
-        console.log("====================================");
         // Only update if the height changed significantly
         if (Math.abs(newHeight - lastHeight) > 5) {
           lastHeight = newHeight;
-          console.log({ lastHeight });
           iframe.style.height = newHeight + "px";
         }
       }
@@ -117,36 +98,56 @@
    * INITIALIZATION
    * ================================ */
 
-  function init() {
+  function mountWidgets() {
     const publishableKey = getPublishableKey();
-    if (!publishableKey) {
-      console.error(
-        "Retold.me widget: Missing publishable_key in embed.js URL",
-      );
-      return;
-    }
+    if (!publishableKey) return;
 
     const elements = document.querySelectorAll("[data-widget]");
 
-    elements.forEach(function (element) {
+    elements.forEach((element) => {
       const widgetId = element.getAttribute("data-widget");
       if (!widgetId) return;
 
-      // Prevent double mounting
-      if (iframeRegistry[widgetId]) return;
+      // ✅ Safe check: does correct iframe already exist?
+      const existingIframe = element.querySelector(
+        `iframe[data-widget-id="${widgetId}"]`,
+      );
+
+      if (existingIframe) {
+        return; // already mounted correctly
+      }
+
+      // ✅ If wrong iframe exists (edge case), clean container
+      element.innerHTML = "";
 
       const iframe = createIframe(widgetId, publishableKey, element);
-      element.replaceWith(iframe);
+
+      // attach identifier for routing & safety
+      iframe.setAttribute("data-widget-id", widgetId);
+
+      element.appendChild(iframe);
     });
   }
 
-  /* ================================
-   * BOOT
-   * ================================ */
+  function observeDOM() {
+    const observer = new MutationObserver(function () {
+      mountWidgets();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  }
+
+  function boot() {
+    mountWidgets();
+    observeDOM();
+  }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("DOMContentLoaded", boot);
   } else {
-    init();
+    boot();
   }
 })();
