@@ -1,6 +1,6 @@
 {
   "/api/*": {
-    "target": "http://localhost:3000",
+    "target": "https://www.retold.me",
     "secure": false,
     "changeOrigin": true
   }

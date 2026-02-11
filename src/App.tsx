@@ -91,7 +91,7 @@ function App() {
         }
 
         // Construct API URL with all parameters - using the new combined endpoint
-        const baseUrl = "http://localhost:3000";
+        const baseUrl = "https://www.retold.me";
         let comboEndpoint = `${baseUrl}/api/widgets/public/combo/${widgetId}?publishable_key=${publishableKey}`;
 
         if (sizeParam) comboEndpoint += `&size=${sizeParam}`;
