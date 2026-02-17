@@ -1,17 +1,41 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import PublicTestimonialItem from "./testimonial-public/PublicTestimonialItem";
 
 // Define TypeScript interfaces based on the retoldin implementation
-interface Testimonial {
+export interface ITestimonialMetadata {
+  consent_website: boolean;
+  consent_social_media: boolean;
+  consent_promotional: boolean;
+  audioUrl?: string;
+  audioKey?: string;
+  audioDurationSeconds?: number;
+  videoUrl?: string;
+  videoKey?: string;
+  videoDurationSeconds?: number;
+}
+
+// Testimonial Types
+
+export type TestimonialStatus = "published" | "pending" | "rejected";
+export interface ITestimonial {
   _id: string;
-  content: string;
   authorName: string;
-  authorTitle?: string;
+  authorTitle: string;
+  authorEmail?: string;
   authorCompany?: string;
-  metadata?: {
-    rating?: number;
-  };
-  createdAt: string;
+  authorProfilePhoto?: string;
+  content: string;
+  rating?: number;
+  companyId: string; // Reference to the company this testimonial is for
+  userId: string; // Reference to the user who owns this testimonial
+  linkId?: string; // Reference to the link used to submit this testimonial (optional)
+  status: "pending" | "published" | "rejected"; // Moderation status (matches backend)
+  publishedAt?: Date; // When the testimonial was published (if approved)
+  metadata: ITestimonialMetadata;
+  original?: string; // Stores the original testimonial data before any edits
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface WidgetSettings {
@@ -30,6 +54,7 @@ interface WidgetData {
   layout: string;
   theme: string;
   limit: number;
+  style?: string;
   selectedTestimonials?: string[];
   settings: WidgetSettings;
   isActive: boolean;
@@ -37,7 +62,7 @@ interface WidgetData {
 
 interface WidgetWithTestimonials {
   widget: WidgetData;
-  testimonials: Testimonial[];
+  testimonials: ITestimonial[];
 }
 
 // Skeleton component for loading state
@@ -91,7 +116,8 @@ function App() {
         }
 
         // Construct API URL with all parameters - using the new combined endpoint
-        const baseUrl = "https://www.retold.me";
+        // const baseUrl = "https://www.retold.me";
+        const baseUrl = "http://localhost:3000";
         let comboEndpoint = `${baseUrl}/api/widgets/public/combo/${widgetId}?publishable_key=${publishableKey}`;
 
         if (sizeParam) comboEndpoint += `&size=${sizeParam}`;
@@ -224,10 +250,7 @@ function App() {
         {widget.settings.showRating && (
           <div className="rating">
             {Array.from({ length: 5 }).map((_, i) => (
-              <span
-                key={i}
-                className={`star ${i < (testimonial.metadata?.rating || 5) ? "filled" : ""}`}
-              >
+              <span key={i} className={`star filled`}>
                 ★
               </span>
             ))}
@@ -253,35 +276,10 @@ function App() {
       <div className="testimonials-container">
         <div className="testimonial-grid">
           {testimonials.map((testimonial) => (
-            <div key={testimonial._id} className="testimonial-card">
-              <div className="testimonial-content">{testimonial.content}</div>
-
-              {widget.settings.showRating && (
-                <div className="rating">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <span
-                      key={i}
-                      className={`star ${i < (testimonial.metadata?.rating || 5) ? "filled" : ""}`}
-                    >
-                      ★
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              <div className="testimonial-author">{testimonial.authorName}</div>
-              <div className="testimonial-meta">
-                {testimonial.authorTitle}
-                {testimonial.authorCompany && ` • ${testimonial.authorCompany}`}
-              </div>
-
-              {/* {widget.settings.showDate && (
-                <div className="testimonial-footer">
-                  Shared on{" "}
-                  {new Date(testimonial.createdAt).toLocaleDateString()}
-                </div>
-              )} */}
-            </div>
+            <PublicTestimonialItem
+              variant={data.widget.style}
+              testimonial={testimonial}
+            />
           ))}
         </div>
       </div>

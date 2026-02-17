@@ -11,9 +11,10 @@
    * CONFIG
    * ================================ */
 
-  const WIDGET_ORIGIN = "https://widget.retold.me";
-  const DEFAULT_HEIGHT = 300;
-  const MIN_HEIGHT = 100;
+  // const WIDGET_ORIGIN = "https://widget.retold.me";
+  const WIDGET_ORIGIN = "http://localhost:4000";
+  const DEFAULT_HEIGHT = 350;
+  const MIN_HEIGHT = 350;
   const MAX_HEIGHT = 5000;
 
   /* ================================
