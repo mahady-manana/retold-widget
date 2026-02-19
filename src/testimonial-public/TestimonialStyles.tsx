@@ -7,6 +7,7 @@ export { default as Style13 } from "./Style13";
 export { default as Style14 } from "./Style14";
 export { default as Style15 } from "./Style15";
 export { default as Style2 } from "./Style2";
+export { default as Style2s } from "./Style2s";
 export { default as Style3 } from "./Style3";
 export { default as Style4 } from "./Style4";
 export { default as Style5 } from "./Style5";

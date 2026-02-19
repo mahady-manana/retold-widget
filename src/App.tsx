@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
+import { AutoScrollerContainer } from "./testimonial-public/AutoScrollerContainer";
 import PublicTestimonialItem from "./testimonial-public/PublicTestimonialItem";
 
 // Define TypeScript interfaces based on the retoldin implementation
@@ -51,7 +52,7 @@ interface WidgetData {
   name: string;
   description?: string;
   type: string;
-  layout: string;
+  layout: "mansory" | "animated";
   theme: string;
   limit: number;
   style?: string;
@@ -153,52 +154,42 @@ function App() {
     };
 
     fetchWidgetAndTestimonials();
-
-    // Set up auto-rotation if enabled
-    let intervalId = null;
-    if (data?.widget.settings.autoRotate) {
-      intervalId = setInterval(() => {
-        // Logic for rotating testimonials would go here
-        console.log("Rotating testimonials...");
-      }, data.widget.settings.rotationInterval);
-    }
-
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
   }, []);
 
   // Function to send resize message to parent frame
+  const rootRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const sendResizeMessage = () => {
-      const contentHeight = Math.max(
-        document.body.scrollHeight,
-        document.body.offsetHeight,
-        document.documentElement.clientHeight,
-        document.documentElement.scrollHeight,
-        document.documentElement.offsetHeight,
-      );
-      window.parent.postMessage(
-        {
-          type: "resize",
-          widgetId: data?.widget._id,
-          height: contentHeight + 20, // Add some padding
-        },
-        "*",
-      );
+    if (!rootRef.current) return;
+
+    let lastHeight = 0; // track previous height
+
+    const updateHeight = () => {
+      const el = rootRef.current!;
+      const newHeight = el.scrollHeight;
+
+      // Only update if difference > 5px
+      if (Math.abs(newHeight - lastHeight) > 5) {
+        lastHeight = newHeight;
+
+        window.parent.postMessage(
+          { type: "resized", widgetId: data?.widget?._id, height: newHeight },
+          "*",
+        );
+      }
     };
 
-    // Send initial resize after content loads
-    const timer = setTimeout(sendResizeMessage, 100);
+    // Initial height send
+    updateHeight();
 
-    // Also send resize on window resize
-    window.addEventListener("resize", sendResizeMessage);
+    // Observe size changes
+    const resizeObserver = new ResizeObserver(() => updateHeight());
+    resizeObserver.observe(rootRef.current);
 
     return () => {
-      clearTimeout(timer);
-      window.removeEventListener("resize", sendResizeMessage);
+      resizeObserver.disconnect();
     };
-  }, [data]);
+  }, [data?.widget?._id]); // no scrollHeight dependency
 
   // Show skeleton while loading
   if (loading) {
@@ -273,14 +264,30 @@ function App() {
   } else {
     // Multiple testimonials view
     return (
-      <div className="testimonials-container">
-        <div className="testimonial-grid">
-          {testimonials.map((testimonial) => (
-            <PublicTestimonialItem
-              variant={data.widget.style}
-              testimonial={testimonial}
-            />
-          ))}
+      <div className="testimonials-container" ref={rootRef}>
+        <div className="space-y-4">
+          {widget.layout === "animated" ? (
+            <>
+              <AutoScrollerContainer
+                testimonials={testimonials}
+                style={widget.style}
+              />
+            </>
+          ) : (
+            <div className="masonry-3-col">
+              {testimonials.map((testimonial) => (
+                <div
+                  key={testimonial._id}
+                  className="break-inside testimonial-item dflex-[1_1_200px] dmin-w-[33%]dp-2 dh-full"
+                >
+                  <PublicTestimonialItem
+                    variant={data.widget.style}
+                    testimonial={testimonial}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     );

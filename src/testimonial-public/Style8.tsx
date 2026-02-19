@@ -1,38 +1,144 @@
 "use client";
-import { useState } from "react";
-import { Play, Mic, Video, Star, X, Award } from "lucide-react";
-import { PublicTestimonial } from "./PublicTestimonialItem";
+import { Award, Star } from "lucide-react";
+import AudioPlayer from "./AudioPlayer";
+import { type TestimonialItemType } from "./styled-type";
+import { TruncatedContent } from "./TruncatedContent";
+import VideoPlayer from "./VideoPlayer";
 
-function Avatar({ children, className = "" }: { children: React.ReactNode; className?: string }) { return <div className={`relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full ${className}`}>{children}</div>; }
-function AvatarImage({ src, alt }: { src: string; alt: string }) { return <img className="aspect-square h-full w-full object-cover" src={src} alt={alt} />; }
-function AvatarFallback({ children, className = "" }: { children: React.ReactNode; className?: string }) { return <div className={`flex h-full w-full items-center justify-center rounded-full ${className}`}>{children}</div>; }
-function StarRating({ rating = 5 }: { rating?: number }) { return (<div className="flex items-center gap-0.5">{Array.from({ length: 5 }).map((_, i) => (<Star key={i} className={`w-3.5 h-3.5 ${i < rating ? "text-yellow-500 fill-yellow-500" : "text-gray-400"}`} />))}</div>); }
-function Modal({ open, onClose, children }: { open: boolean; onClose: () => void; children: React.ReactNode }) { if (!open) return null; return (<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4" onClick={onClose}><div className="relative w-full max-w-4xl" onClick={(e) => e.stopPropagation()}><button onClick={onClose} className="absolute -top-10 right-0 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"><X className="h-5 w-5" /></button>{children}</div></div>); }
-function formatDuration(seconds?: number | null) { if (!seconds) return null; const mins = Math.floor(seconds / 60); const secs = seconds % 60; return `${mins}:${secs.toString().padStart(2, "0")}`; }
+function Avatar({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+function AvatarImage({ src, alt }: { src: string; alt: string }) {
+  return (
+    <img
+      className="aspect-square h-full w-full object-cover"
+      src={src}
+      alt={alt}
+    />
+  );
+}
+function AvatarFallback({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`flex h-full w-full items-center justify-center rounded-full ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+function StarRating({ rating = 5 }: { rating?: number }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star
+          key={i}
+          className={`w-3.5 h-3.5 ${i < rating ? "text-yellow-500 fill-yellow-500" : "text-gray-400"}`}
+        />
+      ))}
+    </div>
+  );
+}
 
-export default function PremiumTestimonial({ testimonial }: { testimonial: PublicTestimonial }) {
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
+export default function PremiumTestimonial({
+  testimonial,
+  contentLines,
+}: TestimonialItemType) {
   const hasAudio = !!testimonial.metadata?.audioUrl;
   const hasVideo = !!testimonial.metadata?.videoUrl;
-  const hasTextContent = testimonial.content && testimonial.content.trim().length > 0;
+  const hasTextContent =
+    testimonial.content && testimonial.content.trim().length > 0;
 
-  return (<>
-    <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 border border-yellow-500/30 shadow-2xl">
+  return (
+    <div className="h-full flex flex-col justify-between relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 border border-yellow-500/30">
       <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-yellow-500/10 to-transparent rounded-bl-full"></div>
-      <div className="flex items-center gap-2 mb-4 text-yellow-500"><Award className="w-5 h-5" /><span className="text-xs font-bold uppercase tracking-wider">Verified Review</span></div>
-      <div className="flex justify-end mb-4 relative"><div className="px-3 py-1.5 bg-slate-800/80 rounded-full border border-yellow-500/30"><StarRating rating={testimonial.rating || 5} /></div></div>
-      {hasTextContent && (<p className="text-sm text-gray-200 mb-5 line-clamp-4 italic border-l-4 border-yellow-500 pl-4 bg-slate-800/50 py-2 pr-3 rounded-r-lg">{testimonial.content}</p>)}
-      {(hasVideo || hasAudio) && (<div className="flex gap-3 mb-5">
-        {hasVideo && (<button onClick={() => setIsVideoModalOpen(true)} className="group w-16 h-16 flex-shrink-0 rounded-2xl overflow-hidden bg-gradient-to-br from-yellow-500 to-amber-600 hover:shadow-lg hover:shadow-yellow-500/30 hover:scale-105 transition-all relative border border-yellow-400/30" type="button"><div className="w-9 h-9 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform absolute inset-0 m-auto"><Play className="w-4 h-4 text-yellow-600 ml-0.5" fill="currentColor" /></div><div className="absolute bottom-1 right-1 bg-black/80 text-white px-1.5 py-0.5 rounded-lg text-xs flex items-center gap-0.5"><Video className="w-2.5 h-2.5" />{formatDuration(testimonial.metadata?.videoDurationSeconds)}</div></button>)}
-        {hasAudio && (<button onClick={() => setIsAudioModalOpen(true)} className="group w-16 h-16 flex-shrink-0 rounded-2xl overflow-hidden bg-gradient-to-br from-amber-500 to-orange-600 hover:shadow-lg hover:shadow-amber-500/30 hover:scale-105 transition-all relative border border-amber-400/30" type="button"><div className="w-9 h-9 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform absolute inset-0 m-auto"><Mic className="w-4 h-4 text-amber-600" /></div><div className="absolute bottom-1 right-1 bg-black/80 text-white px-1.5 py-0.5 rounded-lg text-xs flex items-center gap-0.5"><Mic className="w-2.5 h-2.5" />{formatDuration(testimonial.metadata?.audioDurationSeconds)}</div></button>)}
-      </div>)}
-      <div className="flex items-center gap-3 pt-4 border-t border-slate-700">
-        <Avatar className="w-11 h-11 ring-2 ring-yellow-500/50">{testimonial.authorProfilePhoto ? (<AvatarImage src={testimonial.authorProfilePhoto} alt={testimonial.authorName} />) : (<AvatarFallback className="bg-gradient-to-br from-yellow-500 to-amber-500 text-slate-900 font-bold text-sm">{testimonial.authorName.split(" ").map((n) => n[0]).join("")}</AvatarFallback>)}</Avatar>
-        <div><p className="font-semibold text-white text-sm">{testimonial.authorName}</p><p className="text-xs text-gray-400">{testimonial.authorTitle}{testimonial.authorCompany && ` at ${testimonial.authorCompany}`}</p></div>
+      <div>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2 mb-4 text-yellow-500">
+            <Award className="w-5 h-5" />
+            <span className="text-xs font-bold uppercase tracking-wider">
+              Verified Review
+            </span>
+          </div>
+          <div className="flex justify-end mb-4 relative">
+            <div className="px-3 py-1.5 bg-slate-800/80 rounded-full border border-yellow-500/30">
+              <StarRating rating={testimonial.rating || 5} />
+            </div>
+          </div>
+        </div>
+        {hasTextContent && (
+          <TruncatedContent
+            content={testimonial.content}
+            maxLines={contentLines}
+            className="text-gray-200 mb-5 italic border-l-4 border-yellow-500 pl-4 bg-slate-800/50 py-2 pr-3 rounded-r-lg"
+          />
+        )}
+        {(hasVideo || hasAudio) && (
+          <>
+            {hasVideo && (
+              <VideoPlayer
+                url={testimonial.metadata?.videoUrl || ""}
+                playButtonColor="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
+                playButtonIconColor="text-white"
+                controlsColor="text-white"
+              />
+            )}
+            {hasAudio && (
+              <AudioPlayer
+                url={testimonial.metadata?.audioUrl || ""}
+                duration={testimonial.metadata?.audioDurationSeconds}
+                playButtonColor="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
+                playButtonIconColor="text-white"
+                controlsColor="text-white"
+                backgroundColor="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-neutral-600"
+              />
+            )}
+          </>
+        )}
+      </div>
+      <div className="flex items-center gap-3 mt-4 pt-4 border-t border-slate-700">
+        <Avatar className="w-11 h-11 ring-2 ring-yellow-500/50">
+          {testimonial.authorProfilePhoto ? (
+            <AvatarImage
+              src={testimonial.authorProfilePhoto}
+              alt={testimonial.authorName}
+            />
+          ) : (
+            <AvatarFallback className="bg-gradient-to-br from-yellow-500 to-amber-500 text-slate-900 font-bold text-sm">
+              {testimonial.authorName
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
+            </AvatarFallback>
+          )}
+        </Avatar>
+        <div>
+          <p className="font-semibold text-white text-sm">
+            {testimonial.authorName}
+          </p>
+          <p className="text-xs text-gray-400">
+            {testimonial.authorTitle}
+            {testimonial.authorCompany && ` at ${testimonial.authorCompany}`}
+          </p>
+        </div>
       </div>
     </div>
-    <Modal open={isVideoModalOpen} onClose={() => setIsVideoModalOpen(false)}><div className="bg-black rounded-lg overflow-hidden"><video controls autoPlay src={testimonial.metadata?.videoUrl} className="w-full max-h-[80vh]" /></div></Modal>
-    <Modal open={isAudioModalOpen} onClose={() => setIsAudioModalOpen(false)}><div className="bg-white rounded-lg p-6 max-w-md mx-auto"><h3 className="text-center text-lg font-medium mb-4 text-gray-900">Audio Testimonial</h3><div className="flex flex-col items-center gap-4"><div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center"><Mic className="w-10 h-10 text-blue-600" /></div><audio controls autoPlay src={testimonial.metadata?.audioUrl} className="w-full" /></div></div></Modal>
-  </>);
+  );
 }
