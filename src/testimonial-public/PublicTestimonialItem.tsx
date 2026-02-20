@@ -1,8 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { lazy, Suspense, useMemo } from "react";
-import type { TestimonialItemType } from "./styled-type";
+import { Suspense, useMemo } from "react";
+import Style1 from "./Style1";
+import Style10 from "./Style10";
+import Style11 from "./Style11";
+import Style12 from "./Style12";
+import Style13 from "./Style13";
+import Style14 from "./Style14";
+import Style15 from "./Style15";
+import Style2 from "./Style2";
+import Style2s from "./Style2s";
+import Style3 from "./Style3";
+import Style4 from "./Style4";
+import Style5 from "./Style5";
+import Style6 from "./Style6";
+import Style7 from "./Style7";
+import Style8 from "./Style8";
+import Style9 from "./Style9";
 
 // ============================================================================
 // INLINE MINIMAL UI COMPONENTS (No external dependencies - fully portable)
@@ -53,44 +68,37 @@ interface PublicTestimonialItemProps {
     | string;
 }
 
-const styleMap: Record<string, string> = {
-  default: "Style1",
-  "style-1": "Style1",
-  "style-2": "Style2",
-  "style-2s": "Style2s",
-  "style-3": "Style3",
-  "style-4": "Style4",
-  "style-5": "Style5",
-  "style-6": "Style6",
-  "style-7": "Style7",
-  "style-8": "Style8",
-  "style-9": "Style9",
-  "style-10": "Style10",
-  "style-11": "Style11",
-  "style-12": "Style12",
-  "style-13": "Style13",
-  "style-14": "Style14",
-  "style-15": "Style15",
+const Comp: Record<string, any> = {
+  default: Style1,
+  "style-1": Style1,
+  "style-2": Style2,
+  "style-2s": Style2s,
+  "style-3": Style3,
+  "style-4": Style4,
+  "style-5": Style5,
+  "style-6": Style6,
+  "style-7": Style7,
+  "style-8": Style8,
+  "style-9": Style9,
+  "style-10": Style10,
+  "style-11": Style11,
+  "style-12": Style12,
+  "style-13": Style13,
+  "style-14": Style14,
+  "style-15": Style15,
 };
-
-const lazyCache: Record<
-  string,
-  React.LazyExoticComponent<React.ComponentType<TestimonialItemType>>
-> = {};
 
 export default function PublicTestimonialItem({
   testimonial,
   variant = "style-1",
   contentLines,
 }: PublicTestimonialItemProps) {
-  // Map variant to component filename
-  const filename = styleMap[variant]; // e.g. style-5 → Style-
   const LazyComponent = useMemo(() => {
-    if (!lazyCache[variant]) {
-      lazyCache[variant] = lazy(() => import(`./${filename}`));
+    if (Comp[variant]) {
+      return Comp[variant];
     }
-    return lazyCache[variant];
-  }, [variant, filename]);
+    return Style1;
+  }, [variant]);
   return (
     <Suspense
       fallback={
