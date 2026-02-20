@@ -52,7 +52,7 @@ interface WidgetData {
   name: string;
   description?: string;
   type: string;
-  layout: "mansory" | "animated";
+  layout: "masonry" | "animated";
   theme: string;
   limit: number;
   style?: string;
