@@ -117,8 +117,8 @@ function App() {
         }
 
         // Construct API URL with all parameters - using the new combined endpoint
-        // const baseUrl = "https://www.retold.me";
-        const baseUrl = "http://localhost:3000";
+        const baseUrl = "https://www.retold.me";
+        // const baseUrl = "http://localhost:3000";
         let comboEndpoint = `${baseUrl}/api/widgets/public/combo/${widgetId}?publishable_key=${publishableKey}`;
 
         if (sizeParam) comboEndpoint += `&size=${sizeParam}`;
@@ -230,68 +230,71 @@ function App() {
 
   const { widget, testimonials } = data;
 
-  // Render based on widget type
-  if (widget.type === "single" && testimonials.length > 0) {
+  if (testimonials.length === 1) {
     const testimonial = testimonials[0];
 
     return (
       <div className="testimonial-container">
-        <div className="testimonial-content">{testimonial.content}</div>
-
-        {widget.settings.showRating && (
-          <div className="rating">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <span key={i} className={`star filled`}>
-                ★
-              </span>
-            ))}
-          </div>
-        )}
-
-        <div className="testimonial-author">{testimonial.authorName}</div>
-        <div className="testimonial-meta">
-          {testimonial.authorTitle}
-          {testimonial.authorCompany && ` • ${testimonial.authorCompany}`}
-        </div>
-
-        {/* {widget.settings.showDate && (
-          <div className="testimonial-footer">
-            Shared on {new Date(testimonial.createdAt).toLocaleDateString()}
-          </div>
-        )} */}
+        <PublicTestimonialItem
+          variant={data.widget.style}
+          testimonial={testimonial}
+        />
       </div>
     );
-  } else {
-    // Multiple testimonials view
+  }
+
+  if (testimonials.length === 2) {
     return (
-      <div className="testimonials-container" ref={rootRef}>
-        <div className="space-y-4">
-          {widget.layout === "animated" ? (
-            <>
-              <AutoScrollerContainer
-                testimonials={testimonials}
-                style={widget.style}
-              />
-            </>
-          ) : (
-            <div className="masonry-3-col">
-              {testimonials.map((testimonial) => (
-                <div
-                  key={testimonial._id}
-                  className="break-inside testimonial-item dflex-[1_1_200px] dmin-w-[33%]dp-2 dh-full"
-                >
-                  <PublicTestimonialItem
-                    variant={data.widget.style}
-                    testimonial={testimonial}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
+      <div
+        className="flex gap-4 md:flex-row flex-col"
+        // className="break-inside testimonial-item dflex-[1_1_200px] dmin-w-[33%]dp-2 dh-full"
+      >
+        <div className="md:w-1/2 w-full">
+          <PublicTestimonialItem
+            variant={data.widget.style}
+            testimonial={testimonials[0] as unknown as ITestimonial}
+          />
+        </div>
+        <div className="md:w-1/2 w-full">
+          <PublicTestimonialItem
+            variant={data.widget.style}
+            testimonial={testimonials[1] as unknown as ITestimonial}
+          />
         </div>
       </div>
     );
   }
+  // Render based on widget type
+
+  // Multiple testimonials view
+  return (
+    <div className="testimonials-container" ref={rootRef}>
+      <div className="space-y-4">
+        {widget.layout === "animated" ? (
+          <>
+            <AutoScrollerContainer
+              testimonials={testimonials}
+              style={widget.style}
+            />
+          </>
+        ) : (
+          <div className="masonry-3-col">
+            {testimonials.map((testimonial) => (
+              <div
+                key={testimonial._id}
+                className="break-inside testimonial-item dflex-[1_1_200px] dmin-w-[33%]dp-2 dh-full"
+              >
+                <PublicTestimonialItem
+                  variant={data.widget.style}
+                  testimonial={testimonial}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default App;

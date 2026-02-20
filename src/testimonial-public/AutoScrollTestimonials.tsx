@@ -99,7 +99,10 @@ const TestimonialScroller = ({
           style={{ scrollBehavior: "auto" }}
         >
           {duplicatedTestimonials.map((t, i) => (
-            <div key={`${t._id}-${i}`} className="w-1/3 flex-shrink-0">
+            <div
+              key={`${t._id}-${i}`}
+              className="md:w-1/3 sm:w-1/2 w-full flex-shrink-0"
+            >
               <DarkTestimonial testimonial={t} contentLines={contentLines} />
             </div>
           ))}
